@@ -208,29 +208,6 @@
           errorMessage.textContent = 'Пожалуйста, заполните все поля';
           errorMessage.style.display = 'block';
         }
-      });
-  
-      // Удаляем обработчик для themeToggle, так как элемента нет
-      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  
-      // Устанавливаем начальную тему
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark-theme');
-      } else if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark-theme');
-      } else {
-        if (prefersDarkScheme.matches) {
-          document.documentElement.classList.add('dark-theme');
-        }
-      }
-  
-      // Реакция на изменение системной темы
-      prefersDarkScheme.addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-          document.documentElement.classList.toggle('dark-theme', e.matches);
-        }
-      });
     });
   </script>
 </body>
