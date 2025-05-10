@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - ИнфоСтарт</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-light: #e8f0fe;
+      --primary-dark: #0d47a1;
+      --background: #ffffff;
+      --text: #202124;
+      --text-light: #5f6368;
+      --border: #dadce0;
+      --error: #ea4335;
+    }
+    
+    :root.dark-theme {
+      --background: #121212;
+      --text: #e0e0e0;
+      --text-light: #b0b0b0;
+      --border: #424242;
+      --primary-light: #2a3b6b;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+      position: relative; /* Добавлено для позиционирования кнопки */
+    }
+    
+    .login-container {
+      background-color: var(--background);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--text);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-light);
+    }
+    
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: var(--background);
+      color: var(--text);
+      transition: border-color 0.2s, background-color 0.3s, color 0.3s;
+    }
+    
+    input[type="email"]:focus, input[type="password"]:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    
+    .error-message {
+      color: var(--error);
+      margin-top: 8px;
+      font-size: 0.875rem;
+      display: none;
+    }
+    
+    .btn-primary, .btn-back {
+      width: 100%;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 12px;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-back {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    
+    .btn-back:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .register-link {
+      text-align: center;
+      margin-top: 16px;
+    }
+    
+    .register-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 24px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Вход</h1>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="error-message" id="error-message">Неверный email или пароль</div>
+      <button type="submit" class="btn-primary">Войти</button>
+      <a href="index.html" class="btn-back">Назад</a>
+    </form>
+    <div class="register-link">
+      <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('login-form');
+      const errorMessage = document.getElementById('error-message');
+  
+      // Проверяем, существуют ли элементы
+      if (!form || !errorMessage) {
+        console.error('Ошибка: Не найдены элементы формы или сообщения об ошибке');
+        return;
+      }
+  
+      // Логика формы
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        console.log('Email:', email);
+        console.log('Password:', password);
+  
+        if (email && password) {
+          if (email.toLowerCase() === 'admin') {
+            console.log('Роль admin установлена');
+            localStorage.setItem('userRole', 'admin');
+            window.location.href = 'admin.html';
+          } else {
+            console.log('Роль user установлена');
+            localStorage.setItem('userRole', 'user');
+            window.location.href = 'profile.html';
+          }
+        } else {
+          console.log('Ошибка: Поля не заполнены');
+          errorMessage.textContent = 'Пожалуйста, заполните все поля';
+          errorMessage.style.display = 'block';
+        }
+      });
+  
+      // Удаляем обработчик для themeToggle, так как элемента нет
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  
+      // Устанавливаем начальную тему
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+      } else if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark-theme');
+      } else {
+        if (prefersDarkScheme.matches) {
+          document.documentElement.classList.add('dark-theme');
+        }
+      }
+  
+      // Реакция на изменение системной темы
+      prefersDarkScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+          document.documentElement.classList.toggle('dark-theme', e.matches);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

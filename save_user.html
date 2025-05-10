@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пользователь сохранен - ИнфоСтарт</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-light: #e8f0fe;
+      --primary-dark: #0d47a1;
+      --secondary: #4285f4;
+      --background: #ffffff;
+      --text: #202124;
+      --text-light: #5f6368;
+      --border: #dadce0;
+      --success: #34a853;
+      --warning: #fbbc05;
+      --error: #ea4335;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    header {
+      background-color: var(--background);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .logo svg {
+      margin-right: 8px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    .auth-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    
+    a.btn-primary, a.btn-outline {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .confirmation-section {
+      margin: 48px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 200px); /* Центрирование по вертикали */
+    }
+    
+    .confirmation-section p {
+      font-size: 1.2rem;
+      margin-bottom: 24px;
+      color: var(--success);
+      text-align: center;
+    }
+    
+    .confirmation-section a {
+      margin-top: 16px;
+    }
+    
+    footer {
+      margin-top: auto; /* Прижимает футер к низу */
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px 0;
+    }
+    
+    .footer-about p {
+      margin-top: 8px;
+      color: var(--text-light);
+    }
+    
+    .footer-links h4 {
+      margin-bottom: 8px;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 8px;
+    }
+    
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      text-align: center;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+      .confirmation-section p {
+        font-size: 1rem;
+      }
+      .footer-content {
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Шапка -->
+  <header>
+    <div class="container">
+      <nav>
+        <a href="index.html" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          ИнфоСтарт
+        </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Основное содержимое -->
+  <main>
+    <section class="container confirmation-section">
+      <h2>Пользователь успешно сохранен</h2>
+      <p>Данные пользователя успешно обновлены в системе.</p>
+      <a href="admin.html" class="btn-primary">Вернуться в админ-панель</a>
+    </section>
+  </main>
+</body>
+<!-- В конец <body> в edit_course.html -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id');
+        if (courseId) {
+            // Здесь можно подтянуть данные курса с сервера через AJAX,
+            // но для примера оставим статические значения
+            document.getElementById('course-id').value = courseId;
+        }
+    </script>
+</html>

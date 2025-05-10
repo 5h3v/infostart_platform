@@ -1,0 +1,846 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ИнфоСтарт - Личный кабинет</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-light: #e8f0fe;
+      --primary-dark: #0d47a1;
+      --background: #ffffff;
+      --text: #202124;
+      --text-light: #5f6368;
+      --border: #dadce0;
+      --success: #34a853;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background-color: var(--background);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo svg {
+      margin-right: 8px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 24px;
+      padding: 32px 0;
+    }
+
+    .sidebar {
+      background-color: var(--background);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 24px;
+      height: fit-content;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--text);
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .sidebar-menu a.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .sidebar-menu svg {
+      margin-right: 12px;
+    }
+
+    .main-content {
+      background-color: var(--background);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 24px;
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section#my-study {
+      display: block;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background-color: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--primary);
+      width: 65%;
+    }
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .course-card {
+      background-color: var(--background);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .course-image {
+      height: 160px;
+      background-color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .course-content {
+      padding: 16px;
+    }
+
+    .message-list .message-item {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .message-sender {
+      font-weight: 500;
+    }
+
+    .message-preview {
+      color: var(--text-light);
+    }
+
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .certificates-list .certificate-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      padding: 8px 16px;
+      border-radius: 4px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-outline {
+      padding: 8px 16px;
+      border-radius: 4px;
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      cursor: pointer;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+    }
+
+    .tab-container {
+      margin-top: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-light);
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .lesson-list {
+      list-style: none;
+      margin-top: 24px;
+    }
+
+    .lesson-item {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .lesson-item:last-child {
+      border-bottom: none;
+    }
+
+    .lesson-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .completed .lesson-check {
+      background-color: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .lesson-info {
+      flex: 1;
+    }
+
+    .lesson-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .lesson-meta {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+    }
+
+    .lesson-meta span {
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .discussion-thread {
+      margin-top: 16px;
+    }
+
+    .discussion-item {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .discussion-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 500;
+    }
+
+    .post-date {
+      font-size: 0.875rem;
+      color: var(--text-light);
+    }
+
+    .discussion-content {
+      margin-bottom: 12px;
+    }
+
+    .discussion-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .discussion-reply {
+      margin-left: 40px;
+    }
+
+    .discussion-form {
+      margin-top: 24px;
+    }
+
+    .discussion-form textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background-color: #e6f4ea;
+      color: var(--success);
+    }
+
+    footer {
+      background-color: #f8f9fa;
+      padding: 48px 0;
+      margin-top: 64px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+    }
+
+    .footer-logo {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-logo svg {
+      margin-right: 8px;
+    }
+
+    .footer-links h4 {
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-links svg {
+      margin-right: 8px;
+    }
+
+    .copyright {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      text-align: center;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          ИнфоСтарт
+        </a>
+        <div class="auth-buttons">
+          <a href="logout.html" class="btn-outline">Выйти</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="container dashboard">
+      <div class="sidebar">
+        <h3>Личный кабинет</h3>
+        <ul class="sidebar-menu">
+          <li>
+            <a href="#" data-target="my-study" class="active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              Моя учёба
+            </a>
+          </li>
+          <li>
+            <a href="#" data-target="my-courses">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              Мои курсы
+            </a>
+          </li>
+          <li>
+            <a href="#" data-target="messages">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Сообщения
+            </a>
+          </li>
+          <li>
+            <a href="#" data-target="history">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              История
+            </a>
+          </li>
+          <li>
+            <a href="#" data-target="certificates">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              </svg>
+              Сертификаты
+            </a>
+          </li>
+          <li>
+            <a href="#" data-target="profile">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Профиль
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="main-content content-section" id="my-study">
+        <div class="progress-section">
+          <h3>Общий прогресс</h3>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <p>Завершено 65% программы обучения</p>
+        </div>
+        <div class="tab-container">
+          <div class="tabs">
+            <div class="tab active">Обзор</div>
+            <div class="tab">Материалы</div>
+            <div class="tab">Тесты</div>
+            <div class="tab">Обсуждения</div>
+          </div>
+          <div class="tab-content active">
+            <h3>Основы программирования</h3>
+            <p>Курс "Основы программирования" предназначен для начинающих и охватывает базовые принципы разработки программ. В рамках курса студенты знакомятся с фундаментальными концепциями программирования: переменные, типы данных, операторы, условные конструкции, циклы, функции, работа с массивами и структурами данных. Также рассматриваются основы алгоритмизации, логики и базовые принципы разработки программной архитектуры.
+
+Обучение включает теоретическую часть и практические задания, направленные на развитие навыков написания кода, отладки и тестирования. Особое внимание уделяется разработке алгоритмов решения задач и формированию системного мышления. Курс может быть реализован с использованием одного из популярных языков программирования (например, Python, C++, Java), что позволяет закрепить универсальные принципы программирования в реальных примерах.
+
+По завершении курса слушатели смогут уверенно создавать простые программы, понимать логику работы кода и подготовиться к более углублённому изучению программирования и разработки программного обеспечения.</p>
+          </div>
+          <div class="tab-content">
+            <h3>Материалы курса</h3>
+            <p>Список материалов курса.</p>
+            <h3>Учебные материалы:</h3>
+            <ul>
+              <li>Методические пособия и лекционные конспекты по основам алгоритмизации и программирования</li>
+              <li>Презентации по темам: переменные и типы данных, операторы, условия, циклы, функции, массивы, структуры</li>
+              <li>Интерактивные материалы (видеоуроки, анимации, демо-примеры кода)</li>
+              <li>Онлайн-платформы для обучения: Stepik, Coursera, Khan Academy</li>
+            </ul>
+            <h3>Практические материалы:</h3>
+            <ul>
+              <li>Сборники задач на алгоритмы, условия, циклы, функции и массивы</li>
+              <li>Практикумы по программированию с примерами и упражнениями</li>
+              <li>Лабораторные работы с пошаговыми инструкциями и тестами</li>
+              <li>Домашние задания с автоматической проверкой решений</li>
+              <li>Индивидуальные и групповые проекты (например, разработка консольного калькулятора, мини-игры)</li>
+            </ul>
+            <h3>Инструменты:</h3>
+            <ul>
+              <li>Среда разработки (IDE): Visual Studio Code, PyCharm, Code::Blocks, Replit</li>
+              <li>Системы контроля версий: Git и GitHub</li>
+              <li>Язык программирования: Python (основной), C++ или Java (по выбору)</li>
+            </ul>
+          </div>
+          <div class="tab-content">
+            <h3>Тесты для самопроверки</h3>
+            <ul class="lesson-list">
+              <li class="lesson-item completed">
+                <div class="lesson-check">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Тест 1: Основы программирования</div>
+                  <div class="lesson-meta">
+                    <span>10 вопросов</span>
+                    <span>Результат: 85%</span>
+                  </div>
+                </div>
+              </li>
+              <li class="lesson-item">
+                <div class="lesson-check"></div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Тест 2: Переменные и типы данных</div>
+                  <div class="lesson-meta">
+                    <span>15 вопросов</span>
+                  </div>
+                </div>
+              </li>
+              <li class="lesson-item">
+                <div class="lesson-check"></div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Тест 3: Условные операторы</div>
+                  <div class="lesson-meta">
+                    <span>12 вопросов</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="tab-content">
+            <h3>Обсуждения</h3>
+            <div class="discussion-thread">
+              <div class="discussion-item">
+                <div class="discussion-header">
+                  <img src="https://i.pinimg.com/736x/49/67/c4/4967c4912e08f23d7c736a6faf079a63.jpg" alt="Аватар пользователя" class="user-avatar" style="width: 50px; height: auto;">
+                  <div class="user-info">
+                    <div class="user-name">Мария С.</div>
+                    <div class="post-date">Вчера, 15:42</div>
+                  </div>
+                </div>
+                <div class="discussion-content">
+                  <p>В уроке 3 не совсем понятно объяснение о вложенных условиях. Можете привести больше примеров?</p>
+                </div>
+                <div class="discussion-actions">
+                  <button class="btn-outline">Ответить</button>
+                </div>
+              </div>
+              <div class="discussion-item discussion-reply">
+                <div class="discussion-header">
+                  <img src="https://sun9-12.userapi.com/impf/c850120/v850120831/1b89d5/ftHpT1_sVck.jpg?size=604x604&quality=96&sign=128650e92350e9fb51b2a444a2c27ba5&type=album" alt="Аватар преподавателя" class="user-avatar" style="width: 50px; height: auto;">
+                  <div class="user-info">
+                    <div class="user-name">Александр П. <span class="badge badge-success">Преподаватель</span></div>
+                    <div class="post-date">Сегодня, 09:15</div>
+                  </div>
+                </div>
+                <div class="discussion-content">
+                  <p>Добрый день, Мария! Конечно, вот дополнительные примеры вложенных условий...</p>
+                </div>
+                <div class="discussion-actions">
+                  <button class="btn-outline">Ответить</button>
+                </div>
+              </div>
+            </div>
+            <div class="discussion-form">
+              <h4>Добавить комментарий</h4>
+              <textarea placeholder="Напишите ваш вопрос или комментарий..."></textarea>
+              <button class="btn-primary">Отправить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content content-section" id="my-courses" style="display: none;">
+        <h3>Мои курсы</h3>
+        <div class="courses-grid">
+          <div class="course-card">
+            <div class="course-image">Курс 1</div>
+            <div class="course-content">
+              <h4>Основы программирования</h4>
+              <p>Изучите основы программирования на Python.</p>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-image">Курс 2</div>
+            <div class="course-content">
+              <h4>Алгоритмы и структуры данных</h4>
+              <p>Погрузитесь в мир алгоритмов.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content content-section" id="messages" style="display: none;">
+        <h3>Сообщения</h3>
+        <div class="message-list">
+          <div class="message-item">
+            <div class="message-sender">Преподаватель Александр П.</div>
+            <div class="message-preview">Ваш вопрос по уроку 3...</div>
+          </div>
+          <div class="message-item">
+            <div class="message-sender">Система</div>
+            <div class="message-preview">Вы завершили курс...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content content-section" id="history" style="display: none;">
+        <h3>История активности</h3>
+        <ul class="activity-list">
+          <li>Завершён урок "Введение в алгоритмы" - 10.01.2025</li>
+          <li>Пройден тест "Основы программирования" - 15.01.2025</li>
+        </ul>
+      </div>
+
+      <div class="main-content content-section" id="certificates" style="display: none;">
+        <h3>Сертификаты</h3>
+        <div class="certificates-list">
+          <div class="certificate-item">
+            <h4>Сертификат по курсу "Основы программирования"</h4>
+            <a href="#" class="btn-primary">Скачать</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content content-section" id="profile" style="display: none;">
+        <h3>Профиль пользователя</h3>
+        <div class="profile-info">
+          <p>Имя: Иван Петров</p>
+          <p>Email: ivan@example.com </p>
+          <button class="btn-primary">Редактировать профиль</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            ИнфоСтарт
+          </div>
+          <p>Интерактивная платформа для обучения информатике и программированию. Наша миссия — сделать обучение технологиям доступным и интересным для всех.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Поддержка</h4>
+          <ul>
+            <li>
+              <a href="info.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4m0-4h.01"></path>
+                </svg>
+                Справка
+              </a>
+            </li>
+            <li>
+              <a href="support.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Контакты
+              </a>
+            </li>
+            <li>
+              <a href="faq.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4m0-4h.01"></path>
+                </svg>
+                FAQ
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2025 ИнфоСтарт. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          tabContents[index].classList.add('active');
+        });
+      });
+
+      const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('data-target');
+          document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+          });
+          document.getElementById(targetId).style.display = 'block';
+          sidebarLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

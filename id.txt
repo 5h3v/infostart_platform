@@ -1,0 +1,3 @@
+localStorage.setItem('userRole', 'admin')
+
+localStorage.setItem('userRole', 'user')

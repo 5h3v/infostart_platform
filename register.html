@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - ИнфоСтарт</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-light: #e8f0fe;
+      --primary-dark: #0d47a1;
+      --background: #ffffff;
+      --text: #202124;
+      --text-light: #5f6368;
+      --border: #dadce0;
+      --error: #ea4335;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+      position: relative; /* Добавлено для позиционирования кнопки */
+    }
+
+    .register-container {
+      background-color: var(--background);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-light);
+    }
+
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: var(--background);
+      color: var(--text);
+      transition: border-color 0.2s, background-color 0.3s, color 0.3s;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    .error-message {
+      color: var(--error);
+      margin-top: 8px;
+      font-size: 0.875rem;
+      display: none;
+    }
+
+    .btn-primary, .btn-back {
+      width: 100%;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-back {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-back:hover {
+      background-color: var(--primary-light);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .login-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 24px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h1>Регистрация</h1>
+    <form id="register-form">
+      <div class="form-group">
+        <label for="name">Имя</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Подтверждение пароля</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
+      </div>
+      <div class="error-message" id="error-message"></div>
+      <button type="submit" class="btn-primary">Зарегистрироваться</button>
+      <a href="index.html" class="btn-back">Назад</a>
+    </form>
+    <div class="login-link">
+      <p>Уже есть аккаунт? <a href="login.html">Войти</a></p>
+    </div>
+  </div>
+
+  <script>
+    let registeredUsers = [];
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('register-form');
+      const errorMessage = document.getElementById('error-message');
+      const themeToggle = document.getElementById('theme-toggle');  
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (password !== confirmPassword) {
+          errorMessage.textContent = 'Пароли не совпадают';
+          errorMessage.style.display = 'block';
+        } else {
+          const user = { name, email, password };
+          registeredUsers.push(user);
+          
+          console.log('Зарегистрированные пользователи:', registeredUsers);
+          
+          errorMessage.style.display = 'none';
+          alert('Регистрация прошла успешно!');
+          window.location.href = 'profile.html'; // Перенаправление на profile.html
+        }
+      });
+    });
+  </script>
+</body>
+</html>

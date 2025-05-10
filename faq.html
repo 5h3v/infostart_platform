@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Справка - ИнфоСтарт</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-light: #e8f0fe;
+      --primary-dark: #0d47a1;
+      --secondary: #4285f4;
+      --background: #ffffff;
+      --text: #202124;
+      --text-light: #5f6368;
+      --border: #dadce0;
+      --success: #34a853;
+      --warning: #fbbc05;
+      --error: #ea4335;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    header {
+      background-color: var(--background);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .logo svg {
+      margin-right: 8px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    footer {
+      background-color: #f8f9fa;
+      padding: 48px 0;
+      margin-top: 64px;
+      transition: background-color 0.3s;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+    }
+
+    .footer-logo {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-logo svg {
+      margin-right: 8px;
+    }
+
+    .footer-links h4 {
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-links svg {
+      margin-right: 8px;
+    }
+
+    .copyright {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      text-align: center;
+      font-size: 0.875rem;
+    }
+    
+    @media (max-width: 768px) {
+      .delete-section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Шапка -->
+  <header>
+    <div class="container">
+      <nav>
+        <a href="index.html" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          ИнфоСтарт
+          <div class="nav-links">
+            <a href="index_e-platform.html">Главная</a>
+          </div>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Основное содержимое -->
+  <main>
+    <section class="container">
+      <h2>Часто задаваемые вопросы (FAQ)</h2>
+      <p>Q: Нужно ли что-то устанавливать?</p>
+    <p>A: Нет, все инструменты доступны онлайн.</p>
+    <p>Q: Нужно ли за что-то платить?</p>
+    <p>A: Нет, весь курс является бесплатным.</p>
+    <p>Q: Как получить сертификат?</p>
+    <p>A: Пройдите все уроки курса и выполните финальный проект.</p>
+        </div>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            ИнфоСтарт
+          </div>
+          <p>Интерактивная платформа для обучения информатике и программированию. Наша миссия — сделать обучение технологиям доступным и интересным для всех.</p>
+        </div>
+      <div class="copyright">
+        <p>&copy; 2025 ИнфоСтарт. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
