@@ -208,6 +208,10 @@
           errorMessage.textContent = 'Пожалуйста, заполните все поля';
           errorMessage.style.display = 'block';
         }
+      });
+  
+      // Удаляем обработчик для themeToggle, так как элемента нет
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
     });
   </script>
 </body>
